@@ -1,23 +1,15 @@
-// src/App.js
+// App.js
 import React from 'react';
-import './styles.css';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Homepage from './components/Homepage';
-import CardDetails from './components/CardDetails';
-import EventDetails from './components/EventDetails';
+import "./styles.css"
+import { BrowserRouter as Router } from 'react-router-dom';
+import AppRoutes from './components/Routes';
 
-function App() {
+const App = () => {
   return (
     <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<Homepage />} />
-          <Route path="/card-details" element={<CardDetails />} />
-          <Route path="/event-details" element={<EventDetails />} />
-        </Routes>
-      </div>
+      <AppRoutes />
     </Router>
   );
-}
+};
 
 export default App;
