@@ -1,7 +1,7 @@
 // routes/cards.js
 const express = require('express');
 const router = express.Router();
-const { getObservations, getConditions, getImmunizations } = require('../controllers/dataController');
+const { getObservations, getConditions, getImmunizations } = require('../controllers/cardController');
 const { authenticateUser } = require('../middleware/authMiddleware');
 
 // Get observations

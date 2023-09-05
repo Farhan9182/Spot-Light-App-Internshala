@@ -1,7 +1,7 @@
 // Example: Event controller
 // Create controllers for managing events
 
-const Event = require('../models/Event');
+const Event = require('../models/event');
 
 // Get all events
 const getEvents = async (req, res) => {

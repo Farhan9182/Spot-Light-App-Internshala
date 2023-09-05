@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors'); // CORS middleware if needed
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
@@ -9,7 +9,7 @@ const app = express();
 // Middleware
 app.use(express.json()); // Parse JSON requests
 app.use(cors()); // CORS for cross-origin requests if needed
-app.use(cookieParser()); // Parse cookies if needed
+// app.use(cookieParser()); // Parse cookies if needed
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded requests
 
 // Connect to MongoDB
@@ -27,14 +27,16 @@ db.once('open', () => {
 });
 
 // Routes
+const testRoutes = require('./routes/test');
 const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
-const dataRoutes = require('./routes/data');
+const cardRoutes = require('./routes/cards');
 const eventRoutes = require('./routes/events');
 
+app.use('/test', testRoutes); // Test routes
 app.use('/auth', authRoutes); // Authentication routes
 app.use('/user', profileRoutes); // User profile routes
-app.use('/data', dataRoutes); // Data retrieval routes
+app.use('/cards', cardRoutes); // Cards retrieval routes
 app.use('/events', eventRoutes); // Event routes
 
 // Start the server
