@@ -16,8 +16,6 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded requests
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
 });
 
 const db = mongoose.connection;
@@ -33,11 +31,20 @@ const profileRoutes = require('./routes/profile');
 const cardRoutes = require('./routes/cards');
 const eventRoutes = require('./routes/events');
 
+
 app.use('/test', testRoutes); // Test routes
 app.use('/auth', authRoutes); // Authentication routes
 app.use('/user', profileRoutes); // User profile routes
 app.use('/cards', cardRoutes); // Cards retrieval routes
 app.use('/events', eventRoutes); // Event routes
+/** Error handling */
+app.use((req, res) => {
+    const error = new Error('route not found');
+    return res.status(404).json({
+      code: '00004',
+      message: "Route not found",
+    });
+});
 
 // Start the server
 const port = process.env.PORT || 5000;
