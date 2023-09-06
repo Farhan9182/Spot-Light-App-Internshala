@@ -73,7 +73,7 @@ const logout = (req, res) => {
 // Verify controller (Check if the user is authenticated)
 const verify = (req, res) => {
   try {
-    const token = req.cookies.token;
+    const token = req?.headers?.authorization?.split(' ')[1];
     if (!token) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
