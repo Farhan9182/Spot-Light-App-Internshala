@@ -31,7 +31,6 @@ const profileRoutes = require('./routes/profile');
 const cardRoutes = require('./routes/cards');
 const eventRoutes = require('./routes/events');
 
-
 app.use('/test', testRoutes); // Test routes
 app.use('/auth', authRoutes); // Authentication routes
 app.use('/user', profileRoutes); // User profile routes

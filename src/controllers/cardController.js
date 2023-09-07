@@ -5,51 +5,40 @@ const Card = require('../models/card');
 const getCards = async (req, res) => {
   try {
     // Access authenticated user data if needed (req.user)
-    // Retrieve all events data from the database
-    const cards = await Card.find(/* Your query here */);
+    // Retrieve all cards data from the database
+    const cardsData = await Card.find();
 
-    res.status(200).json(cards);
+    // Organize card data by resourceType
+    const cardTypeData = {};
+    cardsData.forEach((card) => {
+      if (!cardTypeData[card.resourceType]) {
+        cardTypeData[card.resourceType] = [];
+      }
+      cardTypeData[card.resourceType].push(card);
+    });
+
+    // Send distinct cardTypes to the frontend
+    res.status(200).json(cardTypeData);
   } catch (error) {
     console.error('Get events error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-const getObservations = async (req, res) => {
-    try {
-      // Access authenticated user data if needed (req.user)
-      // Retrieve observations data from the database
-  
-      res.status(200).json(/* Your data here */);
-    } catch (error) {
-      console.error('Get observations error:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  };
-  
-  const getConditions = async (req, res) => {
-    try {
-      // Access authenticated user data if needed (req.user)
-      // Retrieve conditions data from the database
-  
-      res.status(200).json(/* Your data here */);
-    } catch (error) {
-      console.error('Get conditions error:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  };
-  
-  const getImmunizations = async (req, res) => {
-    try {
-      // Access authenticated user data if needed (req.user)
-      // Retrieve immunizations data from the database
-  
-      res.status(200).json(/* Your data here */);
-    } catch (error) {
-      console.error('Get immunizations error:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  };
-  
-  module.exports = { getObservations, getConditions, getImmunizations };
+const createCard = async (req, res) => {
+  res.status(200).json({
+    message: "Future Implementation",
+  });
+};
+const updateCard = async (req, res) => {
+  res.status(200).json({
+    message: "Future Implementation",
+  });
+};
+const deleteCard = async (req, res) => {
+  res.status(200).json({
+    message: "Future Implementation",
+  });
+};
+module.exports = { getCards, createCard, updateCard, deleteCard };
   

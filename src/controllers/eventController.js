@@ -8,12 +8,20 @@ const getEvents = async (req, res) => {
   try {
     // Access authenticated user data if needed (req.user)
     // Retrieve all events data from the database
-    const events = await Event.find(/* Your query here */);
+    const events = await Event.find();
 
     const formattedEvents = events.map(event => ({
-      id: event._id,
-      title: event.title,
-      // Add more fields as needed
+      id: event.id,
+      year: event.year,
+      eventHeader: event.eventHeader,
+      provider: event.provider,
+      facility: event.facility,
+      eventType: event.eventType,
+      references: event.references,
+      reference: event.reference,
+      serviceDate: event.serviceDate,
+      resourceType: event.resourceType,
+      cost: (event?.cost !== undefined) ? event.cost : "n/a"
     }));
 
     res.status(200).json(formattedEvents);
@@ -28,17 +36,9 @@ const createEvent = async (req, res) => {
   try {
     // Access authenticated user data if needed (req.user)
     // Create a new event based on the request data
-    const newEvent = new Event(/* Event data here */);
-    await newEvent.save();
-
-    // Customize the response data as needed
-    const createdEvent = {
-      id: newEvent._id,
-      title: newEvent.title,
-      // Add more fields as needed
-    };
-
-    res.status(201).json(createdEvent);
+    res.status(200).json({
+      message: "Future Implementation",
+    });
   } catch (error) {
     console.error('Create event error:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -49,23 +49,12 @@ const createEvent = async (req, res) => {
 const updateEvent = async (req, res) => {
   try {
     // Access authenticated user data if needed (req.user)
-    const eventId = req.params.eventId;
+    const eventId = req.params?.eventId;
 
     // Update the event in the database based on the request data
-    const updatedEvent = await Event.findByIdAndUpdate(eventId, req.body, { new: true });
-
-    if (!updatedEvent) {
-      return res.status(404).json({ message: 'Event not found' });
-    }
-
-    // Customize the response data as needed
-    const updatedEventData = {
-      id: updatedEvent._id,
-      title: updatedEvent.title,
-      // Add more fields as needed
-    };
-
-    res.status(200).json(updatedEventData);
+    res.status(200).json({
+      message: "Future Implementation",
+    });
   } catch (error) {
     console.error('Update event error:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -76,22 +65,12 @@ const updateEvent = async (req, res) => {
 const deleteEvent = async (req, res) => {
   try {
     // Access authenticated user data if needed (req.user)
-    const eventId = req.params.eventId;
+    const eventId = req.params?.eventId;
 
     // Find and delete the event from the database
-    const deletedEvent = await Event.findByIdAndDelete(eventId);
-
-    if (!deletedEvent) {
-      return res.status(404).json({ message: 'Event not found' });
-    }
-
-    const deletedEventData = {
-      id: deletedEvent._id,
-      title: deletedEvent.title,
-      // Add more fields as needed
-    };
-
-    res.status(200).json(deletedEventData);
+    res.status(200).json({
+      message: "Future Implementation",
+    });
   } catch (error) {
     console.error('Delete event error:', error);
     res.status(500).json({ message: 'Internal server error' });

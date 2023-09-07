@@ -21,10 +21,11 @@ const authenticateUser = (req, res, next) => {
 
     // Verify the token using your JWT secret key
     jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
-      if (err) throw new Error(err.message);
+      if (error) throw new Error(error.message);
       if (!decoded?.id) throw new Error('userId not found in jwt');
+
       // Attach the decoded user data to the request for further use
-      req.userId = decoded.id;
+      req.user = decoded;
       next();
     });
   } catch (error) {
