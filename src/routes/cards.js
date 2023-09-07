@@ -1,16 +1,19 @@
 // routes/cards.js
 const express = require('express');
 const router = express.Router();
-const { getObservations, getConditions, getImmunizations } = require('../controllers/cardController');
+const { getCards, createCard, updateCard, deleteCard } = require('../controllers/cardController');
 const { authenticateUser } = require('../middleware/authMiddleware');
 
-// Get observations
-router.get('/observations', authenticateUser, getObservations);
+// Get all cards arranged by card types
+router.get('/cards', authenticateUser, getCards);
 
-// Get conditions
-router.get('/conditions', authenticateUser, getConditions);
+// Create a card
+router.post('/cards', authenticateUser, createCard);
 
-// Get immunizations
-router.get('/immunizations', authenticateUser, getImmunizations);
+// Update a card
+router.put('/cards/:cardId', authenticateUser, updateCard);
+
+// Delete a card
+router.delete('/cards/:cardId', authenticateUser, deleteCard);
 
 module.exports = router;
