@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link,  } from 'react-router-dom';
 import { useCardData } from './CardDataContext';
+import { useEventData } from './EventDataContext';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -10,7 +11,7 @@ import axios from 'axios';
 
 function Homepage() {
   const cardContext = useCardData();
-  const [timelineData, setTimelineData] = useState([]);
+  const eventContext = useEventData();
   const [distinctYears, setDistinctYears] = useState([]);
   const [distinctEventType, setDistinctEventType] = useState([]);
   const [selectedYear, setSelectedYear] = useState("");
@@ -49,7 +50,7 @@ function Homepage() {
                 "Authorization": `Bearer ${getToken()}`,
             }
         }).then((eventsResponse) => {
-            setTimelineData(eventsResponse.data.formattedEvents);
+            eventContext.updateEventData(eventsResponse.data.formattedEvents);
             setDistinctEventType(eventsResponse.data.distinctEventType);
             setDistinctYears(eventsResponse.data.distinctYears);
         })
@@ -66,7 +67,7 @@ function Homepage() {
   };
 
   // Filter the timeline data based on selected filters
-  const filteredData = timelineData.filter((event) => {
+  const filteredData = eventContext.eventData.filter((event) => {
     const yearMatch = selectedYear == "" || event.year == selectedYear;
     const eventTypeMatch = selectedEventType == "" || event.eventType == selectedEventType;
     return yearMatch && eventTypeMatch;
@@ -140,7 +141,7 @@ function Homepage() {
             <div className="mt-2 space-y-4 border-t border-gray-300"></div>
               <Slider {...sliderSettings}>
                 {filteredData.map((event, index) => (
-                <Link to={`/event-details?id=${event.id}`} key={index}>
+                <Link to={`/event-details?id=${index}`} key={index}>
                   <div key={index} className="mt-2">
                     <div className='flex justify-between ml-1 mr-1'>
                       <div className="w-auto max-w-xs flex flex-col items-center space-y-1 shadow shadow-md justify-content">
