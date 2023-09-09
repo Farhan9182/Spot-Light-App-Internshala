@@ -17,10 +17,10 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('/api/auth/login', formData);
+      const response = await axios.post('http://localhost:5000/auth/login', formData);
       const { token } = response.data;
       localStorage.setItem('token', token);
-      navigate('/user-home');
+      navigate('/');
     } catch (error) {
       console.error('Login failed:', error);
     }
