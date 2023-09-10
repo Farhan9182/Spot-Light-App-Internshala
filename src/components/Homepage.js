@@ -1,6 +1,6 @@
 // src/components/Homepage.js
 import React, { useState, useEffect } from 'react';
-import { Link,  } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCardData } from './CardDataContext';
 import { useEventData } from './EventDataContext';
 import Slider from "react-slick";
@@ -10,13 +10,16 @@ import "../styles.css";
 import axios from 'axios';
 
 function Homepage() {
+  const navigate = useNavigate();
   const cardContext = useCardData();
   const eventContext = useEventData();
+  const [user, setUser] = useState({});
   const [distinctYears, setDistinctYears] = useState([]);
   const [distinctEventType, setDistinctEventType] = useState([]);
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedEventType, setSelectedEventType] = useState("");
   const [allIconObj, setAllIconObj] = useState({});
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const sliderSettings = {
     infinite: false,
@@ -28,14 +31,20 @@ function Homepage() {
   };
 
   useEffect(() => {
-    const getToken = () => localStorage.getItem('token');
-    // Fetch cards data (sample data)
-    axios.get('http://localhost:5000/cards/cards', {
-        headers : {
+    async function fetchData() {
+      try {
+        const getToken = () => localStorage.getItem('token');
+        const userData = await axios.get('http://localhost:5000/user/profile', {
+          headers : {
             "Authorization": `Bearer ${getToken()}`,
-        }
-    }).then((cardsResponse) => {
-        // set cards data
+          }
+        });
+        setUser(userData.data);
+        const cardsResponse = await axios.get('http://localhost:5000/cards/cards', {
+            headers : {
+                "Authorization": `Bearer ${getToken()}`,
+            }
+        });
         cardContext.updateCardData(cardsResponse.data);
         const iconObj = {};
         Object.keys(cardsResponse.data).forEach((cardType) => {
@@ -45,16 +54,22 @@ function Homepage() {
           }
         });
         setAllIconObj(iconObj);
-        axios.get('http://localhost:5000/events/events', {
+        const eventsResponse = await axios.get('http://localhost:5000/events/events', {
             headers : {
                 "Authorization": `Bearer ${getToken()}`,
             }
-        }).then((eventsResponse) => {
-            eventContext.updateEventData(eventsResponse.data.formattedEvents);
-            setDistinctEventType(eventsResponse.data.distinctEventType);
-            setDistinctYears(eventsResponse.data.distinctYears);
-        })
-    });
+        });
+        eventContext.updateEventData(eventsResponse.data.formattedEvents);
+        setDistinctEventType(eventsResponse.data.distinctEventType);
+        setDistinctYears(eventsResponse.data.distinctYears);
+  
+      } catch (error) {
+        localStorage.removeItem('token');
+        console.log(error);
+        navigate('/login');
+      }
+    };
+    fetchData();
   }, []);
 
   const handleFilterChange = (event) => {
@@ -73,12 +88,38 @@ function Homepage() {
     return yearMatch && eventTypeMatch;
   });
 
+  const handleUserIconClick = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleLogout = () => {
+    // Perform logout actions here, e.g., remove token and navigate to the login page
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
     <div className="homepage main-content" >
       <header className="bg-white p-4 text-black flex justify-between items-center">
         {/* Top-left user icon */}
-        <div className="bg-teal-500 w-12 h-12 flex items-center justify-center rounded-full">
-          <span className="user-icon">AC</span>
+        <div className='relative'>
+          <div
+            onClick={handleUserIconClick} // Toggle menu when user icon is clicked
+            className="bg-teal-500 w-12 h-12 flex items-center justify-center rounded-full cursor-pointer"
+          >
+            <span className="user-icon">
+              {(user?.name?.split(' ')[0]?.[0] ?? '') ||
+                ''}{(user?.name?.split(' ')[1]?.[0] ?? '') || ''}
+            </span>
+            {isMenuOpen && (
+              // Menu content
+              <div className="absolute top-6 left-12 right-4 bg-white p-2 space-y-2">
+                <button onClick={handleLogout} className="w-full text-center">
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
         {/* "SpotLight" text */}
         <h1 className="text-xl font-semibold">Spot Light</h1>

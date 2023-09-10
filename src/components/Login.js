@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
 const Login = () => {
@@ -73,12 +73,21 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-teal-400 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Log In
             </button>
           </div>
         </form>
+        {/* Signup link */}
+        <div className="text-center">
+          <p className="mt-4 text-sm">
+            New Registration,{' '}
+            <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+              Signup here
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
