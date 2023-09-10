@@ -1,27 +1,36 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
-const Signup = () => {
+interface FormData {
+  username: string;
+  password: string;
+  name: string;
+  email: string;
+}
+
+const Signup: React.FC = () => {
   const navigate = useNavigate();
-  const [error, setError] = useState(null); // State for error message
-  const [formData, setFormData] = useState({
+  const [error, setError] = useState<string | null>(null); // State for error message
+  const [formData, setFormData] = useState<FormData>({
     username: '',
     password: '',
-    name: ''
+    name: '',
+    email: '',
   });
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
       await axios.post('http://localhost:5000/auth/signup', formData);
       navigate('/login');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Signup failed:', error);
       setError(error.response?.data?.message || 'Signup failed'); // Set the error message
     }
@@ -70,7 +79,7 @@ const Signup = () => {
               />
             </div>
             <div>
-              <label htmlFor="username" className="sr-only">
+              <label htmlFor="name" className="sr-only">
                 Name
               </label>
               <input
@@ -82,6 +91,22 @@ const Signup = () => {
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="First-Name Last-Name"
                 value={formData.name}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="sr-only">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="text"
+                autoComplete="email"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Email"
+                value={formData.email}
                 onChange={handleChange}
               />
             </div>
@@ -101,6 +126,15 @@ const Signup = () => {
             </button>
           </div>
         </form>
+        {/* Signup link */}
+        <div className="text-center">
+          <p className="mt-4 text-sm">
+            Existing User,{' '}
+            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+              Login here
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

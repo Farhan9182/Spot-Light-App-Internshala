@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Logout = () => {
+const Logout: React.FC = () => {
   const navigate = useNavigate();
 
   // Function to handle the logout action

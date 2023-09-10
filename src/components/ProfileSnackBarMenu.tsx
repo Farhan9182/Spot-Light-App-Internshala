@@ -1,6 +1,11 @@
-import React from 'react';
 
-function SnackbarMenu({ isOpen, onClose, onLogout }) {
+interface SnackbarMenuProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onLogout: () => void;
+}
+
+function SnackbarMenu({ isOpen, onClose, onLogout }: SnackbarMenuProps) {
   const snackbarClass = isOpen
     ? 'translate-y-0'
     : 'translate-y-full';

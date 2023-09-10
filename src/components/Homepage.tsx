@@ -1,4 +1,4 @@
-// src/components/Homepage.js
+// src/components/Homepage.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCardData } from './CardDataContext';
@@ -9,16 +9,38 @@ import "slick-carousel/slick/slick-theme.css";
 import "../styles.css";
 import axios from 'axios';
 
+interface User {
+  name?: string;
+  // Add other user properties as needed
+}
+
+interface Event {
+  year: string;
+  month: string;
+  date: string;
+  day: string;
+  eventType: string;
+  provider: string;
+  eventHeader: string;
+  status?: string;
+  facility: string,
+  references: Array<number>,
+  reference: number,
+  serviceDate: string,
+  resourceType: string,
+  cost: string,
+}
+
 function Homepage() {
   const navigate = useNavigate();
   const cardContext = useCardData();
   const eventContext = useEventData();
-  const [user, setUser] = useState({});
-  const [distinctYears, setDistinctYears] = useState([]);
-  const [distinctEventType, setDistinctEventType] = useState([]);
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedEventType, setSelectedEventType] = useState("");
-  const [allIconObj, setAllIconObj] = useState({});
+  const [user, setUser] = useState<User>({});
+  const [distinctYears, setDistinctYears] = useState<string[]>([]);
+  const [distinctEventType, setDistinctEventType] = useState<string[]>([]);
+  const [selectedYear, setSelectedYear] = useState<string>("");
+  const [selectedEventType, setSelectedEventType] = useState<string>("");
+  const [allIconObj, setAllIconObj] = useState<Record<string, string>>({});
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const sliderSettings = {
@@ -34,19 +56,19 @@ function Homepage() {
     async function fetchData() {
       try {
         const getToken = () => localStorage.getItem('token');
-        const userData = await axios.get('http://localhost:5000/user/profile', {
-          headers : {
+        const userData = await axios.get<User>('http://localhost:5000/user/profile', {
+          headers: {
             "Authorization": `Bearer ${getToken()}`,
           }
         });
         setUser(userData.data);
-        const cardsResponse = await axios.get('http://localhost:5000/cards/cards', {
-            headers : {
-                "Authorization": `Bearer ${getToken()}`,
-            }
+        const cardsResponse = await axios.get<Record<string, string>>('http://localhost:5000/cards/cards', {
+          headers: {
+            "Authorization": `Bearer ${getToken()}`,
+          }
         });
         cardContext.updateCardData(cardsResponse.data);
-        const iconObj = {};
+        const iconObj: Record<string, string> = {};
         Object.keys(cardsResponse.data).forEach((cardType) => {
           const arr = cardType.split("IconUrl");
           if (arr.length > 1) {
@@ -54,37 +76,42 @@ function Homepage() {
           }
         });
         setAllIconObj(iconObj);
-        const eventsResponse = await axios.get('http://localhost:5000/events/events', {
-            headers : {
-                "Authorization": `Bearer ${getToken()}`,
-            }
+        const eventsResponse = await axios.get<{
+          formattedEvents: Event[];
+          distinctEventType: string[];
+          distinctYears: string[];
+        }>('http://localhost:5000/events/events', {
+          headers: {
+            "Authorization": `Bearer ${getToken()}`,
+          }
         });
         eventContext.updateEventData(eventsResponse.data.formattedEvents);
         setDistinctEventType(eventsResponse.data.distinctEventType);
         setDistinctYears(eventsResponse.data.distinctYears);
-  
+
       } catch (error) {
         localStorage.removeItem('token');
-        console.log(error);
+        console.error(error);
         navigate('/login');
       }
-    };
+    }
+
     fetchData();
   }, []);
 
-  const handleFilterChange = (event) => {
+  const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = event.target;
     if (name === "year") {
-        setSelectedYear(value);
+      setSelectedYear(value);
     } else if (name === "eventType") {
-        setSelectedEventType(value);
+      setSelectedEventType(value);
     }
   };
 
   // Filter the timeline data based on selected filters
   const filteredData = eventContext.eventData.filter((event) => {
-    const yearMatch = selectedYear == "" || event.year == selectedYear;
-    const eventTypeMatch = selectedEventType == "" || event.eventType == selectedEventType;
+    const yearMatch = selectedYear === "" || event.year === selectedYear;
+    const eventTypeMatch = selectedEventType === "" || event.eventType === selectedEventType;
     return yearMatch && eventTypeMatch;
   });
 
@@ -133,7 +160,7 @@ function Homepage() {
       <main className="bg-white p-4">
         {/* Cards Section */}
         <div className="flex flex-wrap justify-between">
-            {
+          {
             Object.keys(cardContext.cardData)?.map((cardType) => {
               return (cardType in allIconObj) ? (
                 <Link
@@ -149,71 +176,72 @@ function Homepage() {
                         alt={cardType}              // Provide a meaningful alt text
                         className="icon-image w-12 h-12"      // Apply any necessary styling
                       />
-                    <p className="pt-9 font-semibold text-center">{cardType}</p>
+                      <p className="pt-9 font-semibold text-center">{cardType}</p>
                     </div>
                   )}
                 </Link>
-              ) : null;})
-            }
+              ) : null;
+            })
+          }
         </div>
         {/* Timeline Section */}
         <div className="mt-2 p-2 rounded-lg shadow shadow-md">
-            <h2 className="text-xl font-bold mb-2">Timeline Event</h2>
-            {/* Year and Event Type Filters */}
-            <div className="flex justify-between">
-                <select name="year" value={selectedYear} onChange={handleFilterChange} className="bg-white px-2 py-1 rounded-lg shadow shadow-md">
-                    <option value="">Select Year</option>
-                    {distinctYears.map((year) => (
-                    <option key={year} value={year + ""}>
-                    {year}
-                    </option>
-                    ))}
-                </select>
-                <select name="eventType" value={selectedEventType} onChange={handleFilterChange} className="bg-white-100 px-2 py-1 rounded-lg shadow shadow-md">
-                  <option value="">Event Type</option>
-                  {distinctEventType.map((eventType) => (
-                  <option key={eventType} value={eventType}>
+          <h2 className="text-xl font-bold mb-2">Timeline Event</h2>
+          {/* Year and Event Type Filters */}
+          <div className="flex justify-between">
+            <select name="year" value={selectedYear} onChange={handleFilterChange} className="bg-white px-2 py-1 rounded-lg shadow shadow-md">
+              <option value="">Select Year</option>
+              {distinctYears.map((year) => (
+                <option key={year} value={year + ""}>
+                  {year}
+                </option>
+              ))}
+            </select>
+            <select name="eventType" value={selectedEventType} onChange={handleFilterChange} className="bg-white-100 px-2 py-1 rounded-lg shadow shadow-md">
+              <option value="">Event Type</option>
+              {distinctEventType.map((eventType) => (
+                <option key={eventType} value={eventType}>
                   {eventType}
-                  </option>
-                  ))}
-                </select>
-            </div>
-            {/* Timeline Cards (Carousel Display) */}
-            <div className="mt-2 space-y-4 border-t border-gray-300"></div>
-              <Slider {...sliderSettings}>
-                {filteredData.map((event, index) => (
-                <Link to={`/event-details?id=${index}`} key={index}>
-                  <div key={index} className="mt-2">
-                    <div className='flex justify-between ml-1 mr-1'>
-                      <div className="w-auto max-w-xs flex flex-col items-center space-y-1 shadow shadow-md justify-content">
-                        <span className="px-9 text-base font-semibold bg-teal-300 rounded-lg whitespace-normal">{event.year}</span>
-                        <span className="px-4 text-lg font-bold whitespace-normal">{event.month}</span>
-                        <span className="px-4 text-base font-bold whitespace-normal">{event.date}th {event.day}</span>
-                      </div>
-                      <div>
-                        <span className='text-xl font-bold'>{event.eventType}</span>
-                      </div>
+                </option>
+              ))}
+            </select>
+          </div>
+          {/* Timeline Cards (Carousel Display) */}
+          <div className="mt-2 space-y-4 border-t border-gray-300"></div>
+          <Slider {...sliderSettings}>
+            {filteredData.map((event, index) => (
+              <Link to={`/event-details?id=${index}`} key={index}>
+                <div key={index} className="mt-2">
+                  <div className='flex justify-between ml-1 mr-1'>
+                    <div className="w-auto max-w-xs flex flex-col items-center space-y-1 shadow shadow-md justify-content">
+                      <span className="px-9 text-base font-semibold bg-teal-300 rounded-lg whitespace-normal">{event.year}</span>
+                      <span className="px-4 text-lg font-bold whitespace-normal">{event.month}</span>
+                      <span className="px-4 text-base font-bold whitespace-normal">{event.date}th {event.day}</span>
                     </div>
-                    <div className='flex flex-col items-center mt-2'>
-                      <p className='mt-2'>{event.provider}</p>
-                      <p className="font-semibold mt-2">{event.eventHeader}</p>
-                    </div>
-                    <div className="flex justify-between mt-2 ml-5 mr-5">
-                        <p className='text-gray-500'>Status</p>
-                        <p className='text-gray-500'>Type</p>
-                    </div>
-                    <div className="flex justify-between mt-2">
-                      <div className='w-1/2'>
-                        <span className='text-lg font-bold break-all'>{(event?.status !== undefined ? event.status : "Completed")}</span>
-                      </div>
-                      <div>
-                        <span className='text-lg font-bold break-all'>{`Explanation of benefit`}</span>
-                      </div>
+                    <div>
+                      <span className='text-xl font-bold'>{event.eventType}</span>
                     </div>
                   </div>
-                </Link>
-                ))}
-              </Slider>
+                  <div className='flex flex-col items-center mt-2'>
+                    <p className='mt-2'>{event.provider}</p>
+                    <p className="font-semibold mt-2">{event.eventHeader}</p>
+                  </div>
+                  <div className="flex justify-between mt-2 ml-5 mr-5">
+                    <p className='text-gray-500'>Status</p>
+                    <p className='text-gray-500'>Type</p>
+                  </div>
+                  <div className="flex justify-between mt-2">
+                    <div className='w-1/2'>
+                      <span className='text-lg font-bold break-all'>{(event?.status !== undefined ? event.status : "Completed")}</span>
+                    </div>
+                    <div>
+                      <span className='text-lg font-bold break-all'>{`Explanation of benefit`}</span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </Slider>
         </div>
       </main>
     </div>

@@ -1,19 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
-const Login = () => {
+interface FormData {
+  username: string;
+  password: string;
+}
+
+const Login: React.FC = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [error, setError] = useState<string | null>(null); // State for error message
+  const [formData, setFormData] = useState<FormData>({
     username: '',
     password: '',
   });
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -21,8 +28,9 @@ const Login = () => {
       const { token } = response.data;
       localStorage.setItem('token', token);
       navigate('/');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login failed:', error);
+      setError(error.response?.data?.message || 'Login failed'); // Set the error message
     }
   };
 
@@ -69,7 +77,12 @@ const Login = () => {
               />
             </div>
           </div>
-
+          {/* Error message */}
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-md">
+              {error}
+            </div>
+          )}
           <div>
             <button
               type="submit"
@@ -77,6 +90,12 @@ const Login = () => {
             >
               Log In
             </button>
+          </div>
+          {/* Forgot Password Link */}
+          <div className="text-center">
+            <Link to="/forgot-password" className="text-indigo-600 hover:underline">
+              Forgot Password?
+            </Link>
           </div>
         </form>
         {/* Signup link */}

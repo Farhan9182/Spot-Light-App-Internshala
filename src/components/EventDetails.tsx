@@ -1,16 +1,37 @@
-// src/components/CardDetails.js
-import React, { useState} from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useCardData } from './CardDataContext';
+import { useEventData } from './EventDataContext';
 
-function CardDetails() {
+interface EventDetailsData {
+  id: string;
+  year: string;
+  eventType: string;
+  eventHeader: string;
+  provider: string;
+  facility: string;
+  serviceDate: string;
+  resourceType: string;
+  cost: string;
+}
+
+function EventDetails() {
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
-  const resourceType = queryParams.get('resourceType');
-  const { cardData } = useCardData();
-  const [activeTab, setActiveTab] = useState('summary');
-  const cardDetailsData = cardData[resourceType] || [];
+  const index = Number(queryParams.get('id'));
+  const { eventData } = useEventData();
+  const [activeTab, setActiveTab] = useState<'summary' | 'data'>('summary');
+  const eventDetailsData: EventDetailsData = eventData[index] || {
+    id: '',
+    year: '',
+    eventType: '',
+    eventHeader: '',
+    provider: '',
+    facility: '',
+    serviceDate: '',
+    resourceType: '',
+    cost: '',
+  };
 
   // Function to close the details view and go back
   const handleClose = () => {
@@ -37,7 +58,7 @@ function CardDetails() {
               }`}
               onClick={() => setActiveTab('data')}
             >
-              Data
+              Linked
             </button>
             <div className='px-16 border-b-4'></div>
           </div>
@@ -49,40 +70,54 @@ function CardDetails() {
             X
           </button>
         </div>
-        {activeTab === 'summary' && (
+        {activeTab === 'data' && (
           <div className="bg-white p-4 rounded-lg">
             {/* Summary content */}
-            <p className='mt-6 font-bold'>You have {cardDetailsData.length} records of resource type: {resourceType} </p>
+            <p className='mt-6 font-bold'>You have {eventData.length} records, current index: {(index || 0) + 1} </p>
           </div>
         )}
-        {activeTab === 'data' && (
+        {activeTab === 'summary' && (
           <div className="bg-white-200 p-4 rounded-lg mt-4">
             {/* Data content */}
-            {cardDetailsData.map((item, index) => (
-              <div className='border-b-4 border-gray-200 mt-2 mb-2' key={index}>
+              <div className='border-b-4 border-gray-200 mt-2 mb-2' key={index || '0'}>
                 {/* Render data content here based on item */}
                 <div className='flex'>
                   <p className='w-1/2 text-gray-500 text-base'>Id: </p>
-                  <p className='text-lg'>{item?.id}</p>
+                  <p className='text-lg'>{eventDetailsData?.id}</p>
                 </div>
                 <div className='flex'>
                   <p className='w-1/2 text-gray-500 text-base'>Year: </p>
-                  <p className='text-lg'>{item?.year}</p>
+                  <p className='text-lg'>{eventDetailsData?.year}</p>
                 </div>
                 <div className='flex'>
                   <p className='w-1/2 text-gray-500 text-base'>Event Type: </p>
-                  <p className='text-lg'>{item?.eventType}</p>
+                  <p className='text-lg'>{eventDetailsData?.eventType}</p>
+                </div>
+                <div className='flex'>
+                  <p className='w-1/2 text-gray-500 text-base'>Event Header: </p>
+                  <p className='text-lg'>{eventDetailsData?.eventHeader}</p>
+                </div>
+                <div className='flex'>
+                  <p className='w-1/2 text-gray-500 text-base'>Provider: </p>
+                  <p className='text-lg'>{eventDetailsData?.provider}</p>
+                </div>
+                <div className='flex'>
+                  <p className='w-1/2 text-gray-500 text-base'>Facility: </p>
+                  <p className='text-lg'>{eventDetailsData?.facility}</p>
                 </div>
                 <div className='flex'>
                   <p className='w-1/2 text-gray-500 text-base'>Service Date: </p>
-                  <p className='text-lg'>{item?.serviceDate.split("T")[0]} {item?.serviceDate.split("T")[1].split(":")[0]}:{item?.serviceDate.split("T")[1].split(":")[1]}</p>
+                  <p className='text-lg'>{eventDetailsData?.serviceDate?.split("T")[0]} {eventDetailsData?.serviceDate?.split("T")[1]?.split(":")[0]}:{eventDetailsData?.serviceDate?.split("T")[1]?.split(":")[1]}</p>
                 </div>
                 <div className='flex'>
                   <p className='w-1/2 text-gray-500 text-base'>Resource Type: </p>
-                  <p className='text-lg'>{item?.resourceType}</p>
+                  <p className='text-lg'>{eventDetailsData?.resourceType}</p>
+                </div>
+                <div className='flex'>
+                  <p className='w-1/2 text-gray-500 text-base'>Cost: </p>
+                  <p className='text-lg'>{eventDetailsData?.cost}</p>
                 </div>
               </div>
-            ))}
           </div>
         )}
       </main>
@@ -90,4 +125,4 @@ function CardDetails() {
   );
 }
 
-export default CardDetails;
+export default EventDetails;
