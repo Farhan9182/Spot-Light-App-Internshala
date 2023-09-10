@@ -15,6 +15,7 @@ interface User {
 }
 
 interface Event {
+  id: string;
   year: string;
   month: string;
   date: string;
