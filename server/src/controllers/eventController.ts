@@ -1,23 +1,21 @@
-// Example: Event controller
-// Create controllers for managing events
-
-const Event = require('../models/event');
+import { Request, Response } from 'express';
+import Event, { EventDocument } from '../models/event'; // Assuming EventModel has a TypeScript definition file
 
 // Get all events
-const getEvents = async (req, res) => {
+export const getEvents = async (req: Request, res: Response): Promise<void> => {
   try {
     // Access authenticated user data if needed (req.user)
     // Retrieve all events data from the database
-    const events = await Event.find();
+    const events = await Event.find().sort({ serviceDate: 'descending' });
 
-    const distinctYears = await Event.distinct("year");
-    const distinctEventType = await Event.distinct("eventType");
+    const distinctYears = await Event.distinct('year');
+    const distinctEventType = await Event.distinct('eventType');
     const monthNames = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
     ];
-    const dayNames = [ "Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat"]
-    const formattedEvents = events.map((event) => {
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thr', 'Fri', 'Sat'];
+    const formattedEvents = events.map((event: EventDocument) => {
       const myDate = new Date(event.serviceDate);
       const day = dayNames[myDate.getDay()];
       const date = myDate.getDate();
@@ -36,8 +34,8 @@ const getEvents = async (req, res) => {
         date,
         month,
         resourceType: event.resourceType,
-        cost: (event?.cost !== undefined) ? event.cost : "n/a"
-      }
+        cost: event.cost !== undefined ? event.cost : 'n/a',
+      };
     });
 
     res.status(200).json({
@@ -52,12 +50,12 @@ const getEvents = async (req, res) => {
 };
 
 // Create a new event
-const createEvent = async (req, res) => {
+export const createEvent = async (req: Request, res: Response): Promise<void> => {
   try {
     // Access authenticated user data if needed (req.user)
-    // Create a new event based on the request data
+    // Create a new event based on the Request data
     res.status(200).json({
-      message: "Future Implementation",
+      message: 'Future Implementation',
     });
   } catch (error) {
     console.error('Create event error:', error);
@@ -66,14 +64,14 @@ const createEvent = async (req, res) => {
 };
 
 // Update an event
-const updateEvent = async (req, res) => {
+export const updateEvent = async (req: Request, res: Response): Promise<void> => {
   try {
     // Access authenticated user data if needed (req.user)
     const eventId = req.params?.eventId;
 
-    // Update the event in the database based on the request data
+    // Update the event in the database based on the Request data
     res.status(200).json({
-      message: "Future Implementation",
+      message: 'Future Implementation',
     });
   } catch (error) {
     console.error('Update event error:', error);
@@ -82,19 +80,17 @@ const updateEvent = async (req, res) => {
 };
 
 // Delete an event
-const deleteEvent = async (req, res) => {
+export const deleteEvent = async (req: Request, res: Response): Promise<void> => {
   try {
     // Access authenticated user data if needed (req.user)
     const eventId = req.params?.eventId;
 
     // Find and delete the event from the database
     res.status(200).json({
-      message: "Future Implementation",
+      message: 'Future Implementation',
     });
   } catch (error) {
     console.error('Delete event error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
-
-module.exports = { getEvents, createEvent, updateEvent, deleteEvent };

@@ -1,8 +1,13 @@
-// routes/events.js
-const express = require('express');
+import express from 'express';
+import {
+  getEvents,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+} from '../controllers/eventController';
+import { authenticateUser } from '../middleware/authMiddleware';
+
 const router = express.Router();
-const { getEvents, createEvent, updateEvent, deleteEvent } = require('../controllers/eventController');
-const { authenticateUser } = require('../middleware/authMiddleware');
 
 // Get events
 router.get('/events', authenticateUser, getEvents);
@@ -16,4 +21,4 @@ router.put('/events/:eventId', authenticateUser, updateEvent);
 // Delete an event
 router.delete('/events/:eventId', authenticateUser, deleteEvent);
 
-module.exports = router;
+export default router;

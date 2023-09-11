@@ -1,8 +1,13 @@
-// routes/cards.js
-const express = require('express');
+import express from 'express';
+import {
+  getCards,
+  createCard,
+  updateCard,
+  deleteCard,
+} from '../controllers/cardController';
+import { authenticateUser } from '../middleware/authMiddleware';
+
 const router = express.Router();
-const { getCards, createCard, updateCard, deleteCard } = require('../controllers/cardController');
-const { authenticateUser } = require('../middleware/authMiddleware');
 
 // Get all cards arranged by card types
 router.get('/cards', authenticateUser, getCards);
@@ -16,4 +21,4 @@ router.put('/cards/:cardId', authenticateUser, updateCard);
 // Delete a card
 router.delete('/cards/:cardId', authenticateUser, deleteCard);
 
-module.exports = router;
+export default router;

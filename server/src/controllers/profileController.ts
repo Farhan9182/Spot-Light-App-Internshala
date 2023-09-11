@@ -1,7 +1,8 @@
-const User = require('../models/userModel');
+import { Request, Response } from 'express';
+import User, { UserDocument } from '../models/userModel'; // Assuming UserModel has a TypeScript definition file
 
 // Get user profile
-const getUserProfile = async (req, res) => {
+export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
   try {
     // Access user data from the authenticated user (req.user)
     const { username, id } = req.user;
@@ -10,11 +11,14 @@ const getUserProfile = async (req, res) => {
     const user = await User.findById(id);
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      res.status(404).json({ message: 'User not found' });
+      return;
     }
 
     const userProfile = {
       username: user.username,
+      name: user.name,
+      email: user.email,
       // Add more profile fields here
     };
 
@@ -26,7 +30,7 @@ const getUserProfile = async (req, res) => {
 };
 
 // Update user profile
-const updateUserProfile = async (req, res) => {
+export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
   try {
     // Access user data from the authenticated user (req.user)
     const { id } = req.user;
@@ -35,13 +39,9 @@ const updateUserProfile = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(id, req.body, { new: true });
 
     if (!updatedUser) {
-      return res.status(404).json({ message: 'User not found' });
+      res.status(404).json({ message: 'User not found' });
+      return;
     }
-
-    const userProfile = {
-      username: updatedUser.username,
-      // Add more profile fields here
-    };
 
     res.status(200).json(updatedUser);
   } catch (error) {
@@ -49,5 +49,3 @@ const updateUserProfile = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
-
-module.exports = { getUserProfile, updateUserProfile };
